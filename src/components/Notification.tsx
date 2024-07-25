@@ -1,4 +1,3 @@
-import React, { FunctionComponent } from "react";
 import { ToastType } from "./ToastContainer";
 import "../styles/notification.css";
 import {
@@ -20,14 +19,14 @@ const icons = {
 interface NotificationProps {
 	type: ToastType;
 	message: string;
-	onClose: () => void;
+	onClose?: () => void;
 }
 
-const Notification: FunctionComponent<NotificationProps> = ({
+const Notification = ({
 	type = "info",
 	message,
 	onClose = () => {},
-}) => {
+}: NotificationProps) => {
 	return (
 		<div className={`notification ${type}`}>
 			{/* icons */}

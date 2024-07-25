@@ -1,4 +1,6 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ToastType } from "../components/ToastContainer";
+import Notification from "../components/Notification";
 
 export enum Direction {
 	TOP_RIGHT = "top-right",
@@ -20,13 +22,39 @@ export interface TriggerPropsType {
 	animationStyle?: AnimationStyleEnum;
 }
 
-const useNotification = (dirction?: Direction) => {
-	const triggerNotification = (triggerProps: TriggerPropsType) => {};
-	const NotificationComponent = (
-		<p>
-			<p>ok</p>
-		</p>
+const useNotification = (direction = Direction.TOP_RIGHT) => {
+	const [notification, setNotification] = useState<TriggerPropsType | null>(
+		null
 	);
+
+	const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+	const triggerNotification = useCallback((triggerProps: TriggerPropsType) => {
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+		}
+		let duration = triggerProps.duration ?? 3000;
+		setNotification(triggerProps);
+		setTimeout(() => {
+			setNotification(null);
+			timerRef.current = null;
+		}, duration);
+	}, []);
+
+	useEffect(() => {
+		return () => {
+			if (timerRef.current) {
+				clearTimeout(timerRef.current);
+			}
+		};
+	}, []);
+
+	const NotificationComponent = notification ? (
+		<div className={`${direction}`}>
+			<Notification {...notification} />
+		</div>
+	) : null;
+
 	return { NotificationComponent, triggerNotification };
 };
 
